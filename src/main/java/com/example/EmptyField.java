@@ -3,6 +3,7 @@ public class EmptyField extends Field {
 	private int bombsCnt;
 	public EmptyField(boolean flag, boolean open) {
 		super(flag, open);
+		
 	}
 	public String toString() {
 		if(flag) return "F";

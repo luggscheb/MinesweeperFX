@@ -1,21 +1,17 @@
 package com.example;
-import java.util.Scanner;
+import java.util.Observable;
 import java.util.concurrent.ThreadLocalRandom;
 
 
-public class Playground {
+
+public class Playground extends Observable{
 	private static Field[][] matrix;
 	static int w, h;
 
-	public static void main(String[] args) {
-		Scanner s = new Scanner(System.in);
+	public Playground(int width, int height, int bombs) {
 		
-		init(20, 20, 30);
-		while(!finished()) {
-			printField();
-			System.out.print("next: ");
-			parseInput(s.nextLine());
-		}
+		init(width, height, bombs);
+		
 		
 	}
 
@@ -23,7 +19,7 @@ public class Playground {
 		return matrix;
 	}
 	
-	public static void  init(int width, int height, int anzBomb) {
+	public void  init(int width, int height, int anzBomb) {
 		matrix = new Field[20][20];
 		h = height;
 		w = width;
@@ -42,6 +38,7 @@ public class Playground {
 				if(matrix[i][j] instanceof BombField) {
 					continue;
 				}else{
+
 					matrix[i][j] = new EmptyField(false,false);
 				}
 			}
@@ -65,78 +62,42 @@ public class Playground {
 			}
 		}
 	}
-	public static void printField() {
-		for(int i = -1; i<matrix.length;i++) {  
-            if(i>=0){ System.out.print(i + "	");}else{System.out.print("        ");}
-			for(int j = 0; j<matrix[0].length;j++) {
-				if(i == -1) {
-                    if(j<10){
-                    System.out.print(" "+j+"  "); 
-                }else{
-                    System.out.print(" "+j+" ");
-                }
+	
+	public void show(int x, int y) {
+		
 
-                    continue;}
-				if(j == 0) System.out.print("| ");
-                if(matrix[i][j].getFlag()){
-				System.out.print("F" + " | ");
-                }else if(matrix[i][j].getOpen()){
-                    
-                    int num = 0;
-                    try {
-                        
-                   
-                    for (int o = -1; o <= 1; o++) {
-                        for (int p = -1; p <=1; p++) {
-                            if(matrix[i+o][j+p] instanceof BombField){
-                                num++;
-                        }
-                    }
-                }
-                if (num==0) {
-                    System.out.print(" " + " | "); 
-                }else{
-
-                    System.out.print(num + " | ");
-                }
-                
-                } catch (Exception e) {
-                    System.out.print(" " + " | ");
-                }
-                
-
-                
-                
-
-
-                }else if(matrix[i][j] instanceof EmptyField||matrix[i][j] instanceof BombField){
-                    System.out.print("?" + " | ");
-                }
-            }
-            System.out.println();
-			for(int a = 0; a < (w*4+1); a++) {
-				if(a == 0) System.out.print("	");
-                
-				System.out.print("_");
-			}
-            System.out.println();
-			System.out.println();
+		
+		setChanged();
+		if(finished()){
+			notifyObservers(new Nachricht(Nachricht.Actions.WIN));
+			return;
 		}
-	}
-	public static boolean show(int x, int y) {
-		matrix[y][x].setOpen(true);
-		return matrix[y][x] instanceof BombField;
+		if(matrix[x][y] instanceof EmptyField){
+
+			checkNearFields(x, y);
+			return;
+		}
+		notifyObservers(new Nachricht(Nachricht.Actions.LOST, x, y));
+
 	}
 	
-	public static void flagging(int x, int y) {
-		matrix[y][x].setFlag(true);
+	public void flagging(int x, int y) {
+		if(matrix[x][y].getOpen()) return;
+		
+		matrix[x][y].setFlag(true);
+		setChanged();
+		notifyObservers(new Nachricht(Nachricht.Actions.FLAG, x, y));
+		if(finished()){
+			setChanged();
+			notifyObservers(new Nachricht(Nachricht.Actions.WIN));
+			return;
+		}
 	}
 	
 	public static boolean finished() {
 		for(Field[] fa : matrix){
 			for(Field f : fa) {
 				if(f instanceof BombField && f.getOpen()) {
-					System.out.println("Verloren!");
 					return true;
 				}
 				if(f instanceof BombField && !f.getFlag()) return false;
@@ -145,55 +106,36 @@ public class Playground {
 		return true;
 	}
 	
-	public static void parseInput(String input) {
-		String[] uinput = input.split("\\s");
-		int x = 0;
-        int y = 0;
-		try {
-			x = Integer.parseInt(uinput[1]);
-			y = Integer.parseInt(uinput[2]);
-		}catch(Exception e) {
-			System.out.println("versuche es erneut");
-		}
-		switch(uinput[0]) {
-			case "Flagge":
-				matrix[y][x].setFlag(true);
-				break;
-			case "Offnen":
-				if(matrix[y][x] instanceof EmptyField) {
-					if(((EmptyField)matrix[y][x]).getBombsCnt() == 0) {
-						checkNearFields(x,y);
-					}
-				}
-				matrix[y][x].setOpen(true);
-				break;
-			default:
-				System.out.println("nur Flagge oder Offnen möglich");
-		}
-        System.out.println();
-		System.out.println();
-		System.out.println();
-		System.out.println();
-		System.out.println();
-	}
-	public static void checkNearFields(int x, int y) {
+	
+	public void checkNearFields(int x, int y) {
 		try{
-			if(matrix[y][x] instanceof EmptyField && !matrix[y][x].getOpen()) {
-				if(((EmptyField)matrix[y][x]).getBombsCnt() == 0) {
-					matrix[y][x].setOpen(true);
+			//TODO: Beim Flagggen Bild setzten und fragen ob Emptyfield
+			//TODO: Win einbauen
+			
+			if(matrix[x][y] instanceof EmptyField && !matrix[x][y].getOpen()) {
+				if(((EmptyField)matrix[x][y]).getBombsCnt() == 0) {
+					matrix[x][y].setOpen(true);
+					setChanged();
+					notifyObservers(new Nachricht(Nachricht.Actions.SET,x,y,((EmptyField)matrix[x][y]).getBombsCnt()));
+
 					for(int i = -1; i < 2; i++) {
 						for(int j = -1; j < 2; j++) {
-							checkNearFields(j+x, i+y);
+							
+							checkNearFields(i+x, j+y);
 						}
 					}
 				}else{
-					matrix[y][x].setOpen(true);
+					matrix[x][y].setOpen(true);
+					setChanged();
+					notifyObservers(new Nachricht(Nachricht.Actions.SET,x,y,((EmptyField)matrix[x][y]).getBombsCnt()));
+
 				}
 			}
 		}catch(ArrayIndexOutOfBoundsException e) {
 			return;
 		}
 	}
-
 	
-}
+	
+	
+	}

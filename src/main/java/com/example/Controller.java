@@ -7,7 +7,11 @@ import javafx.scene.input.MouseEvent;
 
 public class Controller implements EventHandler<MouseEvent> {
 
+Playground p ;
 
+    public Controller(Playground p) {
+        this.p = p;
+    }
     
 
     @Override
@@ -18,15 +22,16 @@ public class Controller implements EventHandler<MouseEvent> {
         int x = Integer.parseInt(xy[0]);
         int y = Integer.parseInt(xy[1]);
 
-        if(e.getButton() == MouseButton.SECONDARY){
-            //TODO: right click
-            Playground.flagging(x, y);
-        }
-
         if(e.getButton() == MouseButton.PRIMARY){
             //TODO: left click
-            Playground.show(x, y);
+            System.out.println("left click|"+x+"|"+y);
+            p.show(x, y);
         }
+        if(e.getButton() == MouseButton.SECONDARY){
+            //TODO: right click
+            p.flagging(x, y);
+        }
+
 
 
     }
