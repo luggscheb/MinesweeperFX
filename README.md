@@ -3,7 +3,7 @@
 
 >note: Not optimized code...I did not put all my effort into it so this repository does not reflect my coding skills
 
-<img src="Thumbnail.png" alt="UI" width="500"/>
+<img src="IMG.png" alt="UI" width="500"/>
 
 
 # Features
