@@ -38,6 +38,12 @@ Link -> [OpenJFX](https://openjfx.io)
 <img src="https://i2.wp.com/gluonhq.com/wp-content/uploads/2015/01/gluon_logo.png?fit=781%2C781&ssl=1" alt="drawing" width="200"/>
 
 
+## Images used:
+
+<img src="https://cdn.countryflags.com/thumbs/austria/flag-button-square-250.png" alt="Flag" width="200"/><br/>
+[Link](https://cdn.countryflags.com/thumbs/austria/flag-button-square-250.png)<br/>
+<img src="https://www.thedota2store.com/media/catalog/product/cache/42ff4984ffd52745e8753c22ee11bc83/m/i/minecraft-tnt-plush-toys-bomb-square-stuffed-toys_2.jpg" alt="Bomb" width="200"/><br/>
+[Link](https://www.thedota2store.com/media/catalog/product/cache/42ff4984ffd52745e8753c22ee11bc83/m/i/minecraft-tnt-plush-toys-bomb-square-stuffed-toys_2.jpg)
 
 
 
